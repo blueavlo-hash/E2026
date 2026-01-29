@@ -1,0 +1,14 @@
+Line 165: Class MCI.MMControl of control MidiPlayer was not a loaded control class.
+Line 172: The property name _ExtentX in MidiPlayer is invalid.
+Line 173: The property name _ExtentY in MidiPlayer is invalid.
+Line 174: The property name _Version in MidiPlayer is invalid.
+Line 175: The property name PrevVisible in MidiPlayer is invalid.
+Line 176: The property name NextVisible in MidiPlayer is invalid.
+Line 177: The property name PauseVisible in MidiPlayer is invalid.
+Line 178: The property name BackVisible in MidiPlayer is invalid.
+Line 179: The property name StepVisible in MidiPlayer is invalid.
+Line 180: The property name StopVisible in MidiPlayer is invalid.
+Line 181: The property name RecordVisible in MidiPlayer is invalid.
+Line 182: The property name EjectVisible in MidiPlayer is invalid.
+Line 183: The property name DeviceType in MidiPlayer is invalid.
+Line 184: The property name FileName in MidiPlayer is invalid.
