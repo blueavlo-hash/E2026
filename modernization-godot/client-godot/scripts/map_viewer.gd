@@ -21,6 +21,7 @@ var _camera_speed: float = 10.0
 var _animation_time: float = 0.0
 var _has_animations: bool = false
 var _audio_player: AudioStreamPlayer = null
+var _music_index: int = 0
 
 
 func _ready() -> void:
@@ -255,6 +256,7 @@ func _play_map_music() -> void:
 	if index <= 0:
 		return
 
+	_music_index = index
 	var stream = _load_music_stream(index)
 	if stream == null:
 		push_warning("Music not found for index %d" % index)
@@ -286,6 +288,43 @@ func _load_music_stream(index: int) -> AudioStream:
 		if ResourceLoader.exists(path):
 			return load(path)
 	return null
+
+
+func toggle_music() -> void:
+	if _audio_player == null:
+		return
+	if _audio_player.playing:
+		_audio_player.stop()
+	else:
+		_play_map_music()
+
+
+func set_music_volume(value: float) -> void:
+	if _audio_player == null:
+		return
+	_audio_player.volume_db = linear_to_db(clamp(value, 0.0, 1.0))
+
+
+func is_music_playing() -> bool:
+	if _audio_player == null:
+		return false
+	return _audio_player.playing
+
+
+func is_rain_layer_enabled() -> bool:
+	return draw_rain_layer
+
+
+func is_blocked_overlay_enabled() -> bool:
+	return show_blocked_overlay
+
+
+func get_map_id() -> int:
+	return int(_map_data.get("id", 0))
+
+
+func get_music_index() -> int:
+	return _music_index
 
 
 func _load_json(path: String) -> Dictionary:

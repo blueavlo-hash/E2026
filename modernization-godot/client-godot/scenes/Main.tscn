@@ -1,10 +1,47 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/map_viewer.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="3"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1")
 
 [node name="MapViewer" type="Node2D" parent="."]
 script = ExtResource("2")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("3")
+
+[node name="Panel" type="Panel" parent="HUD"]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 360.0
+offset_bottom = 180.0
+
+[node name="VBox" type="VBoxContainer" parent="HUD/Panel"]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 336.0
+offset_bottom = 156.0
+
+[node name="Title" type="Label" parent="HUD/Panel/VBox"]
+text = "Map Viewer"
+
+[node name="Info" type="Label" parent="HUD/Panel/VBox"]
+text = "Loading..."
+
+[node name="Toggles" type="Label" parent="HUD/Panel/VBox"]
+text = "Toggles"
+
+[node name="MusicToggle" type="Button" parent="HUD/Panel/VBox"]
+text = "Music: Play"
+
+[node name="VolumeLabel" type="Label" parent="HUD/Panel/VBox"]
+text = "Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="HUD/Panel/VBox"]
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.7
