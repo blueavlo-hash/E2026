@@ -83,10 +83,15 @@ def infer_map_dims(size: int, stride: int, default: tuple[int, int]) -> tuple[in
     return default
 
 
-def parse_map_layer(path: Path, default_dims: tuple[int, int]) -> dict:
+def parse_map_layer(path: Path, default_dims: tuple[int, int], warnings: list[str]) -> dict:
     data = path.read_bytes()
     stride = 7
     width, height = infer_map_dims(len(data), stride, default_dims)
+    expected = width * height * stride
+    if expected != len(data):
+        warnings.append(
+            f"{path}: map layer size {len(data)} does not match {width}x{height}x{stride}."
+        )
 
     blocked = []
     g1 = []
@@ -127,14 +132,23 @@ def parse_map_layer(path: Path, default_dims: tuple[int, int]) -> dict:
     }
 
 
-def parse_inf_layer(path: Path, default_dims: tuple[int, int]) -> dict:
+def parse_inf_layer(path: Path, default_dims: tuple[int, int], warnings: list[str]) -> dict:
     data = path.read_bytes()
     tiles = default_dims[0] * default_dims[1]
     stride = len(data) // tiles if tiles > 0 else 0
     if stride <= 0:
         stride = 16
+    if stride % 2 != 0:
+        warnings.append(f"{path}: inf stride {stride} is not divisible by 2.")
+    if stride not in (12, 16, 20):
+        warnings.append(f"{path}: inf stride {stride} is unusual.")
 
     width, height = infer_map_dims(len(data), stride, default_dims)
+    expected = width * height * stride
+    if expected != len(data):
+        warnings.append(
+            f"{path}: inf layer size {len(data)} does not match {width}x{height}x{stride}."
+        )
     fields_per_tile = stride // 2
     fmt = "<" + "h" * fields_per_tile
 
@@ -185,10 +199,15 @@ def parse_inf_layer(path: Path, default_dims: tuple[int, int]) -> dict:
     }
 
 
-def parse_obj_layer(path: Path, default_dims: tuple[int, int]) -> dict:
+def parse_obj_layer(path: Path, default_dims: tuple[int, int], warnings: list[str]) -> dict:
     data = path.read_bytes()
     stride = 14
     width, height = infer_map_dims(len(data), stride, default_dims)
+    expected = width * height * stride
+    if expected != len(data):
+        warnings.append(
+            f"{path}: obj layer size {len(data)} does not match {width}x{height}x{stride}."
+        )
 
     obj_index = []
     amount = []
@@ -264,7 +283,7 @@ def convert_ini_files(out_dir: Path) -> None:
         write_json(out_path, data)
 
 
-def convert_maps(out_dir: Path) -> None:
+def convert_maps(out_dir: Path, warnings: list[str]) -> None:
     map_dat_files = sorted(MAPS_DIR.glob("Map*.dat"))
     map_re = re.compile(r"Map(\d+)\.dat", re.IGNORECASE)
 
@@ -289,17 +308,39 @@ def convert_maps(out_dir: Path) -> None:
             bin_path = dat_path.with_suffix(f".{suffix}")
             if bin_path.exists():
                 if suffix == "map":
-                    entry["layers"][suffix] = parse_map_layer(bin_path, default_dims)
+                    entry["layers"][suffix] = parse_map_layer(
+                        bin_path, default_dims, warnings
+                    )
                 elif suffix == "inf":
-                    entry["layers"][suffix] = parse_inf_layer(bin_path, default_dims)
+                    entry["layers"][suffix] = parse_inf_layer(
+                        bin_path, default_dims, warnings
+                    )
                 elif suffix == "obj":
-                    entry["layers"][suffix] = parse_obj_layer(bin_path, default_dims)
+                    entry["layers"][suffix] = parse_obj_layer(
+                        bin_path, default_dims, warnings
+                    )
                 else:
                     entry["layers"][suffix] = encode_binary(bin_path)
                 entry["source"][suffix] = str(bin_path.relative_to(ROOT))
 
         out_path = out_dir / "maps" / f"Map{map_id}.json"
         write_json(out_path, entry)
+
+
+def load_num_maps() -> int | None:
+    map_dat = MAPS_DIR / "Map.dat"
+    if not map_dat.exists():
+        return None
+    ini = parse_ini(read_text(map_dat))
+    for section in ini["sections"]:
+        if section["name"].upper() == "INIT":
+            value = section["values"].get("NumMaps")
+            if value is not None:
+                try:
+                    return int(value)
+                except ValueError:
+                    return None
+    return None
 
 
 def main() -> int:
@@ -319,6 +360,11 @@ def main() -> int:
         action="store_true",
         help="Convert INI-style data files (NPC, OBJ, Spells, etc).",
     )
+    parser.add_argument(
+        "--validate",
+        action="store_true",
+        help="Print warnings for map layer size or stride anomalies.",
+    )
     args = parser.parse_args()
 
     out_dir = Path(args.out)
@@ -326,10 +372,26 @@ def main() -> int:
         args.maps = True
         args.ini = True
 
+    warnings: list[str] = []
+
+    if args.maps and args.validate:
+        declared = load_num_maps()
+        if declared is not None:
+            actual = len(list(MAPS_DIR.glob("Map*.dat")))
+            if actual < declared:
+                warnings.append(
+                    f"{MAPS_DIR}: Map.dat declares {declared} maps but only {actual} Map*.dat files exist."
+                )
+
     if args.ini:
         convert_ini_files(out_dir)
     if args.maps:
-        convert_maps(out_dir)
+        convert_maps(out_dir, warnings)
+
+    if args.validate and warnings:
+        print("Warnings:")
+        for warning in warnings:
+            print(f"- {warning}")
 
     return 0
 

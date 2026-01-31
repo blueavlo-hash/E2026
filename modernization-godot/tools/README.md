@@ -17,3 +17,4 @@ Output
 Notes
 - `.map` is parsed into `blocked` + 3 `graphics` layers.
 - `.inf` and `.obj` are parsed using VB6 field sizes; `reserved` captures unused fields.
+- Run with `--validate` to emit warnings about map layer sizes or strides.
