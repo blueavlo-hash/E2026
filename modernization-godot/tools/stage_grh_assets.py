@@ -3,6 +3,7 @@ import argparse
 import json
 import re
 import shutil
+import subprocess
 from pathlib import Path
 
 
@@ -73,6 +74,11 @@ def main() -> int:
     parser.add_argument("--dest", default=str(DEFAULT_DEST))
     parser.add_argument("--copy", action="store_true", help="Copy files into dest.")
     parser.add_argument(
+        "--convert",
+        action="store_true",
+        help="Convert BMP files to PNG in dest using ffmpeg.",
+    )
+    parser.add_argument(
         "--report",
         default=str(ROOT / "modernization-godot" / "data" / "client" / "grh_files.json"),
         help="Write a JSON report of available/missing GRH files.",
@@ -112,12 +118,17 @@ def main() -> int:
             if i not in mapping:
                 missing.append(i)
 
-    if args.copy:
+    if args.copy or args.convert:
         dest.mkdir(parents=True, exist_ok=True)
         for grh_id, src in mapping.items():
-            target = dest / f"Grh{grh_id}.bmp"
-            if not target.exists():
-                shutil.copy2(src, target)
+            if args.convert:
+                target = dest / f"Grh{grh_id}.png"
+                cmd = ["ffmpeg", "-y", "-i", str(src), str(target)]
+                subprocess.run(cmd, capture_output=True)
+            else:
+                target = dest / f"Grh{grh_id}.bmp"
+                if not target.exists():
+                    shutil.copy2(src, target)
 
     report = {
         "source": str(source),
@@ -141,6 +152,8 @@ def main() -> int:
     print(f"Missing: {len(missing)}")
     if args.copy:
         print(f"Copied to: {dest}")
+    if args.convert:
+        print(f"Converted to PNG in: {dest}")
     print(f"Report: {report_path}")
     if extras:
         print(f"Extras (non-standard names): {len(extras)}")

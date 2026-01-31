@@ -277,6 +277,9 @@ func _build_candidate_paths(file_num: int) -> Array:
 	if base.ends_with("/"):
 		base = base.substr(0, base.length() - 1)
 	var paths = []
+	paths.append("%s/Grh%d.png" % [base, file_num])
+	paths.append("%s/grh%d.png" % [base, file_num])
+	paths.append("%s/GRH%d.PNG" % [base, file_num])
 	paths.append("%s/Grh%d.bmp" % [base, file_num])
 	paths.append("%s/grh%d.bmp" % [base, file_num])
 	paths.append("%s/GRH%d.BMP" % [base, file_num])
