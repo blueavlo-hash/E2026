@@ -241,14 +241,12 @@ func _build_candidate_paths(file_num: int) -> Array:
 
 
 func _apply_black_colorkey(img: Image) -> void:
-	img.lock()
 	var size = img.get_size()
 	for y in range(size.y):
 		for x in range(size.x):
 			var c = img.get_pixel(x, y)
 			if c.r <= 0.01 and c.g <= 0.01 and c.b <= 0.01:
 				img.set_pixel(x, y, Color(0, 0, 0, 0))
-	img.unlock()
 
 
 func _setup_audio() -> void:
