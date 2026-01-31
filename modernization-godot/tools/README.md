@@ -13,6 +13,7 @@ python modernization-godot/tools/convert_legacy_data.py
 Output
 - `modernization-godot/data/legacy-json/` for INI-style files.
 - `modernization-godot/data/maps/` for per-map JSON with parsed tile layers.
+- `modernization-godot/data/client/` for client graphics data and indices.
 
 Notes
 - `.map` is parsed into `blocked` + 3 `graphics` layers.

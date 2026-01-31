@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SERVER_DIR = ROOT / "Server"
 MAPS_DIR = SERVER_DIR / "Maps"
+CLIENT_DIR = ROOT / "Client"
 OUT_DIR_DEFAULT = ROOT / "modernization-godot" / "data"
 
 
@@ -38,6 +39,24 @@ def parse_ini(text: str) -> dict:
     if current is not None:
         sections.append(current)
     return {"type": "ini", "sections": sections}
+
+
+def parse_sectioned_list(ini: dict, prefix: str) -> dict:
+    items = []
+    init = None
+    for section in ini["sections"]:
+        name = section["name"]
+        if name.upper() == "INIT":
+            init = section["values"]
+            continue
+        if name.lower().startswith(prefix.lower()):
+            suffix = name[len(prefix) :]
+            try:
+                item_id = int(suffix)
+            except ValueError:
+                item_id = None
+            items.append({"id": item_id, "values": section["values"]})
+    return {"type": "ini-list", "init": init, "items": items}
 
 
 def infer_grid(size: int) -> tuple[int, int, int] | None:
@@ -283,6 +302,117 @@ def convert_ini_files(out_dir: Path) -> None:
         write_json(out_path, data)
 
 
+def parse_grh_dat(path: Path, warnings: list[str]) -> dict:
+    data = path.read_bytes()
+    if len(data) % 2 != 0:
+        warnings.append(f"{path}: Grh.dat size {len(data)} is not even.")
+    count = len(data) // 2
+    values = struct.unpack_from("<" + "h" * count, data, 0)
+
+    index = 0
+    if count < 6:
+        warnings.append(f"{path}: Grh.dat too small to parse.")
+        return {"type": "grh", "entries": []}
+
+    header = list(values[index : index + 5])
+    index += 5
+
+    entries = []
+    if index >= count:
+        warnings.append(f"{path}: Grh.dat missing first entry.")
+        return {"type": "grh", "header": header, "entries": entries}
+
+    while index < count:
+        grh_id = values[index]
+        index += 1
+        if grh_id == 0:
+            break
+        if index >= count:
+            warnings.append(f"{path}: Grh {grh_id} truncated before NumFrames.")
+            break
+
+        num_frames = values[index]
+        index += 1
+
+        if num_frames > 1:
+            if index + num_frames > count:
+                warnings.append(f"{path}: Grh {grh_id} frames truncated.")
+                break
+            frames = list(values[index : index + num_frames])
+            index += num_frames
+            if index >= count:
+                warnings.append(f"{path}: Grh {grh_id} missing speed.")
+                break
+            speed = values[index]
+            index += 1
+            entry = {
+                "id": int(grh_id),
+                "num_frames": int(num_frames),
+                "frames": [int(v) for v in frames],
+                "speed": int(speed),
+            }
+        else:
+            if index + 5 > count:
+                warnings.append(f"{path}: Grh {grh_id} truncated in base data.")
+                break
+            file_num = values[index]
+            sx = values[index + 1]
+            sy = values[index + 2]
+            pixel_w = values[index + 3]
+            pixel_h = values[index + 4]
+            index += 5
+            entry = {
+                "id": int(grh_id),
+                "num_frames": int(num_frames),
+                "file_num": int(file_num),
+                "sx": int(sx),
+                "sy": int(sy),
+                "pixel_width": int(pixel_w),
+                "pixel_height": int(pixel_h),
+                "tile_width": float(pixel_w) / 32.0,
+                "tile_height": float(pixel_h) / 32.0,
+            }
+
+        entries.append(entry)
+
+    return {"type": "grh", "header": header, "entries": entries}
+
+
+def convert_client_files(out_dir: Path, warnings: list[str]) -> None:
+    ini_files = [
+        ("Grh.ini", "grh"),
+        ("Body.dat", "body"),
+        ("Head.dat", "head"),
+        ("wpanim.dat", "weapon_anim"),
+        ("shanim.dat", "shield_anim"),
+    ]
+    for filename, out_name in ini_files:
+        path = CLIENT_DIR / filename
+        if not path.exists():
+            continue
+        ini = parse_ini(read_text(path))
+        if filename.lower() in ("body.dat", "head.dat", "wpanim.dat", "shanim.dat"):
+            prefix = {
+                "body.dat": "Body",
+                "head.dat": "Head",
+                "wpanim.dat": "WeaponAnim",
+                "shanim.dat": "ShieldAnim",
+            }[filename.lower()]
+            data = parse_sectioned_list(ini, prefix)
+        else:
+            data = ini
+        data["source"] = str(path.relative_to(ROOT))
+        out_path = out_dir / "client" / f"{out_name}.json"
+        write_json(out_path, data)
+
+    grh_dat = CLIENT_DIR / "Grh.dat"
+    if grh_dat.exists():
+        data = parse_grh_dat(grh_dat, warnings)
+        data["source"] = str(grh_dat.relative_to(ROOT))
+        out_path = out_dir / "client" / "grh_data.json"
+        write_json(out_path, data)
+
+
 def convert_maps(out_dir: Path, warnings: list[str]) -> None:
     map_dat_files = sorted(MAPS_DIR.glob("Map*.dat"))
     map_re = re.compile(r"Map(\d+)\.dat", re.IGNORECASE)
@@ -361,6 +491,11 @@ def main() -> int:
         help="Convert INI-style data files (NPC, OBJ, Spells, etc).",
     )
     parser.add_argument(
+        "--client",
+        action="store_true",
+        help="Convert client graphics data (Grh/Body/Head/Weapon/Shield).",
+    )
+    parser.add_argument(
         "--validate",
         action="store_true",
         help="Print warnings for map layer size or stride anomalies.",
@@ -371,6 +506,7 @@ def main() -> int:
     if not args.maps and not args.ini:
         args.maps = True
         args.ini = True
+        args.client = True
 
     warnings: list[str] = []
 
@@ -387,6 +523,8 @@ def main() -> int:
         convert_ini_files(out_dir)
     if args.maps:
         convert_maps(out_dir, warnings)
+    if args.client:
+        convert_client_files(out_dir, warnings)
 
     if args.validate and warnings:
         print("Warnings:")
