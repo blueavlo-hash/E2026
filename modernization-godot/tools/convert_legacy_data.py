@@ -1,0 +1,338 @@
+#!/usr/bin/env python
+import argparse
+import base64
+import json
+import math
+import re
+import struct
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[2]
+SERVER_DIR = ROOT / "Server"
+MAPS_DIR = SERVER_DIR / "Maps"
+OUT_DIR_DEFAULT = ROOT / "modernization-godot" / "data"
+
+
+def read_text(path: Path) -> str:
+    return path.read_text(encoding="latin-1", errors="replace")
+
+
+def parse_ini(text: str) -> dict:
+    sections = []
+    current = None
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        if line.startswith("'") or line.startswith(";"):
+            continue
+        if line.startswith("[") and line.endswith("]"):
+            if current is not None:
+                sections.append(current)
+            current = {"name": line[1:-1], "values": {}}
+            continue
+        if "=" in line and current is not None:
+            key, value = line.split("=", 1)
+            current["values"][key.strip()] = value.strip()
+    if current is not None:
+        sections.append(current)
+    return {"type": "ini", "sections": sections}
+
+
+def infer_grid(size: int) -> tuple[int, int, int] | None:
+    if size % 10000 == 0:
+        return 100, 100, size // 10000
+    preferred = [128, 100, 96, 80, 64, 120, 160, 200, 256]
+    for dim in preferred:
+        cells = dim * dim
+        if size % cells == 0:
+            return dim, dim, size // cells
+    for dim in range(16, 512):
+        cells = dim * dim
+        if size % cells == 0:
+            return dim, dim, size // cells
+    return None
+
+
+def encode_binary(path: Path) -> dict:
+    data = path.read_bytes()
+    grid = infer_grid(len(data))
+    out = {
+        "type": "binary",
+        "size": len(data),
+        "bytes_base64": base64.b64encode(data).decode("ascii"),
+    }
+    if grid is not None:
+        out["grid"] = {
+            "width": grid[0],
+            "height": grid[1],
+            "tile_stride_bytes": grid[2],
+        }
+    return out
+
+
+def infer_map_dims(size: int, stride: int, default: tuple[int, int]) -> tuple[int, int]:
+    tiles = size // stride if stride > 0 else 0
+    default_tiles = default[0] * default[1]
+    if tiles == default_tiles:
+        return default
+    root = int(math.isqrt(tiles))
+    if root * root == tiles and root > 0:
+        return root, root
+    return default
+
+
+def parse_map_layer(path: Path, default_dims: tuple[int, int]) -> dict:
+    data = path.read_bytes()
+    stride = 7
+    width, height = infer_map_dims(len(data), stride, default_dims)
+
+    blocked = []
+    g1 = []
+    g2 = []
+    g3 = []
+
+    offset = 0
+    for _y in range(height):
+        row_blocked = []
+        row_g1 = []
+        row_g2 = []
+        row_g3 = []
+        for _x in range(width):
+            if offset + stride <= len(data):
+                b, v1, v2, v3 = struct.unpack_from("<Bhhh", data, offset)
+            else:
+                b, v1, v2, v3 = 0, 0, 0, 0
+            offset += stride
+            row_blocked.append(int(b))
+            row_g1.append(int(v1))
+            row_g2.append(int(v2))
+            row_g3.append(int(v3))
+        blocked.append(row_blocked)
+        g1.append(row_g1)
+        g2.append(row_g2)
+        g3.append(row_g3)
+
+    return {
+        "type": "map",
+        "width": width,
+        "height": height,
+        "blocked": blocked,
+        "graphics": [g1, g2, g3],
+        "raw": {
+            "size": len(data),
+            "stride": stride,
+        },
+    }
+
+
+def parse_inf_layer(path: Path, default_dims: tuple[int, int]) -> dict:
+    data = path.read_bytes()
+    tiles = default_dims[0] * default_dims[1]
+    stride = len(data) // tiles if tiles > 0 else 0
+    if stride <= 0:
+        stride = 16
+
+    width, height = infer_map_dims(len(data), stride, default_dims)
+    fields_per_tile = stride // 2
+    fmt = "<" + "h" * fields_per_tile
+
+    tile_exit_map = []
+    tile_exit_x = []
+    tile_exit_y = []
+    npc_index = []
+    reserved = []
+
+    offset = 0
+    for _y in range(height):
+        row_map = []
+        row_x = []
+        row_y = []
+        row_npc = []
+        row_res = []
+        for _x in range(width):
+            if offset + stride <= len(data):
+                values = list(struct.unpack_from(fmt, data, offset))
+            else:
+                values = [0] * fields_per_tile
+            offset += stride
+            row_map.append(int(values[0]) if len(values) > 0 else 0)
+            row_x.append(int(values[1]) if len(values) > 1 else 0)
+            row_y.append(int(values[2]) if len(values) > 2 else 0)
+            row_npc.append(int(values[3]) if len(values) > 3 else 0)
+            row_res.append([int(v) for v in values[4:]])
+        tile_exit_map.append(row_map)
+        tile_exit_x.append(row_x)
+        tile_exit_y.append(row_y)
+        npc_index.append(row_npc)
+        reserved.append(row_res)
+
+    return {
+        "type": "inf",
+        "width": width,
+        "height": height,
+        "tile_exit_map": tile_exit_map,
+        "tile_exit_x": tile_exit_x,
+        "tile_exit_y": tile_exit_y,
+        "npc_index": npc_index,
+        "reserved": reserved,
+        "raw": {
+            "size": len(data),
+            "stride": stride,
+            "fields_per_tile": fields_per_tile,
+        },
+    }
+
+
+def parse_obj_layer(path: Path, default_dims: tuple[int, int]) -> dict:
+    data = path.read_bytes()
+    stride = 14
+    width, height = infer_map_dims(len(data), stride, default_dims)
+
+    obj_index = []
+    amount = []
+    locked = []
+    sign = []
+    sign_owner = []
+
+    offset = 0
+    for _y in range(height):
+        row_obj = []
+        row_amt = []
+        row_lock = []
+        row_sign = []
+        row_owner = []
+        for _x in range(width):
+            if offset + stride <= len(data):
+                v_obj, v_amt, v_lock, v_sign, v_owner = struct.unpack_from(
+                    "<hhihi", data, offset
+                )
+            else:
+                v_obj, v_amt, v_lock, v_sign, v_owner = 0, 0, 0, 0, 0
+            offset += stride
+            row_obj.append(int(v_obj))
+            row_amt.append(int(v_amt))
+            row_lock.append(int(v_lock))
+            row_sign.append(int(v_sign))
+            row_owner.append(int(v_owner))
+        obj_index.append(row_obj)
+        amount.append(row_amt)
+        locked.append(row_lock)
+        sign.append(row_sign)
+        sign_owner.append(row_owner)
+
+    return {
+        "type": "obj",
+        "width": width,
+        "height": height,
+        "obj_index": obj_index,
+        "amount": amount,
+        "locked": locked,
+        "sign": sign,
+        "sign_owner": sign_owner,
+        "raw": {
+            "size": len(data),
+            "stride": stride,
+        },
+    }
+
+
+def write_json(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def convert_ini_files(out_dir: Path) -> None:
+    ini_files = [
+        "NPC.dat",
+        "NPC2.dat",
+        "OBJ.dat",
+        "Spells.dat",
+        "quests.txt",
+        "signs.txt",
+        "clans.txt",
+        "gossip.txt",
+    ]
+    for name in ini_files:
+        path = SERVER_DIR / name
+        if not path.exists():
+            continue
+        data = parse_ini(read_text(path))
+        data["source"] = str(path.relative_to(ROOT))
+        out_path = out_dir / "legacy-json" / f"{path.stem}.json"
+        write_json(out_path, data)
+
+
+def convert_maps(out_dir: Path) -> None:
+    map_dat_files = sorted(MAPS_DIR.glob("Map*.dat"))
+    map_re = re.compile(r"Map(\d+)\.dat", re.IGNORECASE)
+
+    for dat_path in map_dat_files:
+        match = map_re.match(dat_path.name)
+        if not match:
+            continue
+        map_id = int(match.group(1))
+
+        meta = parse_ini(read_text(dat_path))
+        default_dims = (100, 100)
+        entry = {
+            "id": map_id,
+            "meta": meta,
+            "source": {
+                "dat": str(dat_path.relative_to(ROOT)),
+            },
+            "layers": {},
+        }
+
+        for suffix in ["map", "obj", "inf"]:
+            bin_path = dat_path.with_suffix(f".{suffix}")
+            if bin_path.exists():
+                if suffix == "map":
+                    entry["layers"][suffix] = parse_map_layer(bin_path, default_dims)
+                elif suffix == "inf":
+                    entry["layers"][suffix] = parse_inf_layer(bin_path, default_dims)
+                elif suffix == "obj":
+                    entry["layers"][suffix] = parse_obj_layer(bin_path, default_dims)
+                else:
+                    entry["layers"][suffix] = encode_binary(bin_path)
+                entry["source"][suffix] = str(bin_path.relative_to(ROOT))
+
+        out_path = out_dir / "maps" / f"Map{map_id}.json"
+        write_json(out_path, entry)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Convert legacy VB6 data into JSON.")
+    parser.add_argument(
+        "--out",
+        default=str(OUT_DIR_DEFAULT),
+        help="Output directory for JSON files.",
+    )
+    parser.add_argument(
+        "--maps",
+        action="store_true",
+        help="Convert map data (Map*.dat + .map/.obj/.inf).",
+    )
+    parser.add_argument(
+        "--ini",
+        action="store_true",
+        help="Convert INI-style data files (NPC, OBJ, Spells, etc).",
+    )
+    args = parser.parse_args()
+
+    out_dir = Path(args.out)
+    if not args.maps and not args.ini:
+        args.maps = True
+        args.ini = True
+
+    if args.ini:
+        convert_ini_files(out_dir)
+    if args.maps:
+        convert_maps(out_dir)
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
