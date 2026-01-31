@@ -10,6 +10,7 @@ extends Node2D
 @export var play_music: bool = true
 @export var grh_speed_scale: float = 0.04
 @export var apply_color_key: bool = true
+@export var debug_hover: bool = true
 
 var _map_data: Dictionary = {}
 var _grh_data: Dictionary = {}
@@ -23,6 +24,7 @@ var _animation_time: float = 0.0
 var _has_animations: bool = false
 var _audio_player: AudioStreamPlayer = null
 var _music_index: int = 0
+var _last_hover_info: String = ""
 
 
 func _ready() -> void:
@@ -57,6 +59,9 @@ func _process(delta: float) -> void:
 	if _has_animations:
 		_animation_time += delta
 		queue_redraw()
+
+	if debug_hover:
+		_update_hover_info()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -110,6 +115,13 @@ func _draw() -> void:
 		Vector2(12, view_size.y - 12),
 		"Map %s | Camera %d,%d" % [_map_data.get("id", "?"), _camera_tile.x, _camera_tile.y]
 	)
+
+	if debug_hover and _last_hover_info != "":
+		draw_string(
+			_get_default_font(),
+			Vector2(12, view_size.y - 36),
+			_last_hover_info
+		)
 
 
 func _load_data() -> void:
@@ -173,6 +185,39 @@ func _draw_grh(grh_index: int, position: Vector2) -> bool:
 	var dest_rect = Rect2(dest_pos, Vector2(w, h))
 	draw_texture_rect_region(texture, dest_rect, src_rect)
 	return true
+
+
+func _update_hover_info() -> void:
+	if _map_data.is_empty():
+		_last_hover_info = ""
+		return
+
+	var viewport_pos = get_viewport().get_mouse_position()
+	var view_size = get_viewport_rect().size
+	var tiles_x = int(view_size.x / float(tile_size)) + 2
+	var tiles_y = int(view_size.y / float(tile_size)) + 2
+
+	var start_x = clamp(_camera_tile.x - tiles_x / 2, 0, max(0, _map_width - tiles_x))
+	var start_y = clamp(_camera_tile.y - tiles_y / 2, 0, max(0, _map_height - tiles_y))
+
+	var tile_x = int(viewport_pos.x / float(tile_size)) + start_x
+	var tile_y = int(viewport_pos.y / float(tile_size)) + start_y
+
+	if tile_x < 0 or tile_x >= _map_width or tile_y < 0 or tile_y >= _map_height:
+		_last_hover_info = ""
+		return
+
+	var layers = _map_data.get("layers", {})
+	var map_layer = layers.get("map", {})
+	var graphics_layers = map_layer.get("graphics", [])
+
+	var ids = []
+	for layer_index in range(3):
+		var grh_index = _get_layer_value(graphics_layers, layer_index, tile_x, tile_y)
+		ids.append(grh_index)
+
+	var info = "Tile %d,%d | L1:%d L2:%d L3:%d" % [tile_x, tile_y, ids[0], ids[1], ids[2]]
+	_last_hover_info = info
 
 
 func _resolve_grh_entry(grh_index: int) -> Dictionary:
