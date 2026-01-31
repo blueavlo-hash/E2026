@@ -67,7 +67,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _draw() -> void:
 	if _map_data.is_empty():
-		draw_string(get_theme_default_font(), Vector2(12, 24), "No map data loaded.")
+		draw_string(_get_default_font(), Vector2(12, 24), "No map data loaded.")
 		return
 
 	var view_size = get_viewport_rect().size
@@ -105,7 +105,7 @@ func _draw() -> void:
 				)
 
 	draw_string(
-		get_theme_default_font(),
+		_get_default_font(),
 		Vector2(12, view_size.y - 12),
 		"Map %s | Camera %d,%d" % [_map_data.get("id", "?"), _camera_tile.x, _camera_tile.y]
 	)
@@ -288,6 +288,10 @@ func _load_music_stream(index: int) -> AudioStream:
 		if ResourceLoader.exists(path):
 			return load(path)
 	return null
+
+
+func _get_default_font() -> Font:
+	return ThemeDB.get_default_theme().get_font("font", "Label")
 
 
 func toggle_music() -> void:
