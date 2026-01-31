@@ -283,22 +283,30 @@ def write_json(path: Path, payload: dict) -> None:
 
 def convert_ini_files(out_dir: Path) -> None:
     ini_files = [
-        "NPC.dat",
-        "NPC2.dat",
-        "OBJ.dat",
-        "Spells.dat",
-        "quests.txt",
-        "signs.txt",
-        "clans.txt",
-        "gossip.txt",
+        (SERVER_DIR / "NPC.dat", "npc"),
+        (SERVER_DIR / "NPC2.dat", "npc2"),
+        (SERVER_DIR / "OBJ.dat", "objects"),
+        (SERVER_DIR / "Spells.dat", "spells"),
+        (SERVER_DIR / "quests.txt", "quests"),
+        (SERVER_DIR / "signs.txt", "signs"),
+        (SERVER_DIR / "clans.txt", "clans"),
+        (SERVER_DIR / "gossip.txt", "gossip"),
+        (SERVER_DIR / "Help.dat", "help"),
+        (SERVER_DIR / "Msgboard.txt", "msgboard"),
+        (SERVER_DIR / "Gmque.txt", "gm_queue"),
+        (SERVER_DIR / "bugs.txt", "bugs"),
+        (SERVER_DIR / "banned.txt", "banned"),
+        (SERVER_DIR / "Server.ini", "server_config"),
+        (MAPS_DIR / "Map.dat", "map_index"),
+        (CLIENT_DIR / "Game.ini", "client_config"),
+        (CLIENT_DIR / "Tips.txt", "tips"),
     ]
-    for name in ini_files:
-        path = SERVER_DIR / name
+    for path, out_name in ini_files:
         if not path.exists():
             continue
         data = parse_ini(read_text(path))
         data["source"] = str(path.relative_to(ROOT))
-        out_path = out_dir / "legacy-json" / f"{path.stem}.json"
+        out_path = out_dir / "legacy-json" / f"{out_name}.json"
         write_json(out_path, data)
 
 
@@ -413,6 +421,29 @@ def convert_client_files(out_dir: Path, warnings: list[str]) -> None:
         write_json(out_path, data)
 
 
+def convert_text_files(out_dir: Path) -> None:
+    text_files = [
+        (SERVER_DIR / "Readme.txt", "server_readme"),
+        (CLIENT_DIR / "Readme.txt", "client_readme"),
+        (CLIENT_DIR / "Problems.txt", "client_problems"),
+        (CLIENT_DIR / "News.txt", "client_news"),
+        (CLIENT_DIR / "version.ver", "client_version"),
+        (SERVER_DIR / "Clans" / "ClanInfo.txt", "clan_info"),
+    ]
+    for path, out_name in text_files:
+        if not path.exists():
+            continue
+        text = read_text(path)
+        payload = {
+            "type": "text",
+            "source": str(path.relative_to(ROOT)),
+            "text": text,
+            "lines": text.splitlines(),
+        }
+        out_path = out_dir / "text" / f"{out_name}.json"
+        write_json(out_path, payload)
+
+
 def convert_maps(out_dir: Path, warnings: list[str]) -> None:
     map_dat_files = sorted(MAPS_DIR.glob("Map*.dat"))
     map_re = re.compile(r"Map(\d+)\.dat", re.IGNORECASE)
@@ -496,6 +527,11 @@ def main() -> int:
         help="Convert client graphics data (Grh/Body/Head/Weapon/Shield).",
     )
     parser.add_argument(
+        "--text",
+        action="store_true",
+        help="Convert plain text files (readmes, notes, version).",
+    )
+    parser.add_argument(
         "--validate",
         action="store_true",
         help="Print warnings for map layer size or stride anomalies.",
@@ -507,6 +543,7 @@ def main() -> int:
         args.maps = True
         args.ini = True
         args.client = True
+        args.text = True
 
     warnings: list[str] = []
 
@@ -525,6 +562,8 @@ def main() -> int:
         convert_maps(out_dir, warnings)
     if args.client:
         convert_client_files(out_dir, warnings)
+    if args.text:
+        convert_text_files(out_dir)
 
     if args.validate and warnings:
         print("Warnings:")
