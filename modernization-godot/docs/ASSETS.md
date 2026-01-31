@@ -10,8 +10,9 @@ Overview
 Notes
 - The legacy client loads sprite sheets as `Grh{n}.bmp` based on `Grh.ini`.
 - Godot can load `.bmp`, `.jpg`, `.png`, `.wav`, and `.mp3` directly; it does not natively play `.mid`.
-- If we want music in the modern client, we should convert `.mid` to `.ogg` or `.wav`.
+- Convert `.mid` to `.ogg` using `modernization-godot/tools/convert_music.py`.
 
 Tools
 - `modernization-godot/tools/stage_grh_assets.py` copies and normalizes GRH names into the Godot project.
 - `modernization-godot/tools/scan_game_assets.py` creates a JSON manifest for all GameData assets.
+- `modernization-godot/tools/convert_music.py` converts MIDI into OGG for Godot playback.

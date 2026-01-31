@@ -14,7 +14,10 @@ Copy converted data into this folder so Godot can load it:
 
    If you don't copy, set `asset_root` in the MapViewer to the absolute path of GameData/Grh.
 
-4) Open the Godot project and run.
+4) Convert music (optional, for Godot playback):
+   python modernization-godot/tools/convert_music.py
+
+5) Open the Godot project and run.
 
 Notes
 - The current viewer renders colored tiles for each GRH index.
