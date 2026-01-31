@@ -3,8 +3,12 @@ extends Node2D
 @export var map_json_path: String = "res://data/maps/Map1.json"
 @export var grh_json_path: String = "res://data/client/grh_data.json"
 @export var asset_root: String = "res://assets/grh"
+@export var music_root: String = "res://assets/music"
 @export var tile_size: int = 32
 @export var show_blocked_overlay: bool = true
+@export var draw_rain_layer: bool = false
+@export var play_music: bool = true
+@export var grh_speed_scale: float = 0.04
 
 var _map_data: Dictionary = {}
 var _grh_data: Dictionary = {}
@@ -14,6 +18,9 @@ var _map_width: int = 0
 var _map_height: int = 0
 var _camera_tile: Vector2i = Vector2i(1, 1)
 var _camera_speed: float = 10.0
+var _animation_time: float = 0.0
+var _has_animations: bool = false
+var _audio_player: AudioStreamPlayer = null
 
 
 func _ready() -> void:
@@ -45,6 +52,17 @@ func _process(delta: float) -> void:
 		)
 		queue_redraw()
 
+	if _has_animations:
+		_animation_time += delta
+		queue_redraw()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_R:
+			draw_rain_layer = not draw_rain_layer
+			queue_redraw()
+
 
 func _draw() -> void:
 	if _map_data.is_empty():
@@ -70,6 +88,8 @@ func _draw() -> void:
 			var screen_pos = Vector2((x - start_x) * tile_size, (y - start_y) * tile_size)
 
 			for layer_index in range(3):
+				if layer_index == 2 and not draw_rain_layer:
+					continue
 				var grh_index = _get_layer_value(graphics_layers, layer_index, x, y)
 				if grh_index > 0:
 					if not _draw_grh(grh_index, screen_pos):
@@ -105,16 +125,21 @@ func _load_data() -> void:
 		push_warning("Map dimensions missing in %s" % map_json_path)
 
 	_build_grh_index()
+	_setup_audio()
+	_play_map_music()
 
 
 func _build_grh_index() -> void:
 	_grh_entries.clear()
 	_texture_cache.clear()
+	_has_animations = false
 
 	var entries = _grh_data.get("entries", [])
 	for entry in entries:
 		if entry.has("id"):
 			_grh_entries[int(entry["id"])] = entry
+			if int(entry.get("num_frames", 1)) > 1:
+				_has_animations = true
 
 
 func _draw_grh(grh_index: int, position: Vector2) -> bool:
@@ -147,10 +172,21 @@ func _resolve_grh_entry(grh_index: int) -> Dictionary:
 	if entry.get("num_frames", 1) > 1:
 		var frames = entry.get("frames", [])
 		if frames.size() > 0:
-			var base_id = int(frames[0])
-			if _grh_entries.has(base_id):
-				return _grh_entries[base_id]
+			var frame_index = _select_animation_frame(entry, frames)
+			if _grh_entries.has(frame_index):
+				return _grh_entries[frame_index]
 	return entry
+
+
+func _select_animation_frame(entry: Dictionary, frames: Array) -> int:
+	var num_frames = int(entry.get("num_frames", frames.size()))
+	if num_frames <= 0:
+		return int(frames[0])
+	var speed = float(entry.get("speed", 0))
+	var frame_duration = max(0.05, speed * grh_speed_scale)
+	var frame = int(floor(_animation_time / frame_duration)) % num_frames
+	frame = clamp(frame, 0, frames.size() - 1)
+	return int(frames[frame])
 
 
 func _get_texture(file_num: int) -> Texture2D:
@@ -184,7 +220,72 @@ func _build_candidate_paths(file_num: int) -> Array:
 	paths.append("%s/Grh%d.bmp" % [base, file_num])
 	paths.append("%s/grh%d.bmp" % [base, file_num])
 	paths.append("%s/GRH%d.BMP" % [base, file_num])
+	paths.append("%s/grh%dM.bmp" % [base, file_num])
+	paths.append("%s/GRH%dM.BMP" % [base, file_num])
 	return paths
+
+
+func _setup_audio() -> void:
+	if _audio_player != null:
+		return
+	_audio_player = AudioStreamPlayer.new()
+	_audio_player.bus = "Master"
+	add_child(_audio_player)
+
+
+func _play_map_music() -> void:
+	if not play_music:
+		return
+	if _map_data.is_empty():
+		return
+
+	var map_id = int(_map_data.get("id", 0))
+	var meta = _map_data.get("meta", {})
+	var sections = meta.get("sections", [])
+	var music_num = ""
+	for section in sections:
+		if section.get("name", "") == "Map%d" % map_id:
+			music_num = str(section.get("values", {}).get("MusicNum", ""))
+			break
+
+	if music_num == "":
+		return
+
+	var index = _parse_music_index(music_num)
+	if index <= 0:
+		return
+
+	var stream = _load_music_stream(index)
+	if stream == null:
+		push_warning("Music not found for index %d" % index)
+		return
+
+	_audio_player.stream = stream
+	_audio_player.play()
+
+
+func _parse_music_index(value: String) -> int:
+	var normalized = value.strip_edges()
+	if normalized == "":
+		return 0
+	var parts = normalized.split("-")
+	if parts.size() == 0:
+		return 0
+	return int(parts[0])
+
+
+func _load_music_stream(index: int) -> AudioStream:
+	var base = music_root
+	if base.ends_with("/"):
+		base = base.substr(0, base.length() - 1)
+	var candidates = [
+		"%s/Mus%d.ogg" % [base, index],
+		"%s/mus%d.ogg" % [base, index],
+	]
+	for path in candidates:
+		if ResourceLoader.exists(path):
+			return load(path)
+	return null
 
 
 func _load_json(path: String) -> Dictionary:

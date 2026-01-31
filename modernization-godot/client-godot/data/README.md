@@ -19,6 +19,10 @@ Copy converted data into this folder so Godot can load it:
 
 5) Open the Godot project and run.
 
+Controls
+- Arrow keys to pan.
+- Press R to toggle the rain layer (layer 3).
+
 Notes
 - The current viewer renders colored tiles for each GRH index.
 - Once sprite sheets are available, we can swap placeholder colors for real textures.
