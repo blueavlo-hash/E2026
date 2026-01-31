@@ -2,11 +2,14 @@ extends Node2D
 
 @export var map_json_path: String = "res://data/maps/Map1.json"
 @export var grh_json_path: String = "res://data/client/grh_data.json"
+@export var asset_root: String = "res://assets/grh"
 @export var tile_size: int = 32
 @export var show_blocked_overlay: bool = true
 
 var _map_data: Dictionary = {}
 var _grh_data: Dictionary = {}
+var _grh_entries: Dictionary = {}
+var _texture_cache: Dictionary = {}
 var _map_width: int = 0
 var _map_height: int = 0
 var _camera_tile: Vector2i = Vector2i(1, 1)
@@ -69,8 +72,9 @@ func _draw() -> void:
 			for layer_index in range(3):
 				var grh_index = _get_layer_value(graphics_layers, layer_index, x, y)
 				if grh_index > 0:
-					var color = _color_from_id(grh_index)
-					draw_rect(Rect2(screen_pos, Vector2(tile_size, tile_size)), color)
+					if not _draw_grh(grh_index, screen_pos):
+						var color = _color_from_id(grh_index)
+						draw_rect(Rect2(screen_pos, Vector2(tile_size, tile_size)), color)
 
 			if show_blocked_overlay and _get_grid_value(blocked, x, y) == 1:
 				draw_rect(
@@ -99,6 +103,88 @@ func _load_data() -> void:
 	_map_height = int(map_layer.get("height", 0))
 	if _map_width <= 0 or _map_height <= 0:
 		push_warning("Map dimensions missing in %s" % map_json_path)
+
+	_build_grh_index()
+
+
+func _build_grh_index() -> void:
+	_grh_entries.clear()
+	_texture_cache.clear()
+
+	var entries = _grh_data.get("entries", [])
+	for entry in entries:
+		if entry.has("id"):
+			_grh_entries[int(entry["id"])] = entry
+
+
+func _draw_grh(grh_index: int, position: Vector2) -> bool:
+	var entry = _resolve_grh_entry(grh_index)
+	if entry.is_empty():
+		return false
+	if not entry.has("file_num"):
+		return false
+
+	var file_num = int(entry["file_num"])
+	var texture = _get_texture(file_num)
+	if texture == null:
+		return false
+
+	var sx = int(entry.get("sx", 0))
+	var sy = int(entry.get("sy", 0))
+	var w = int(entry.get("pixel_width", tile_size))
+	var h = int(entry.get("pixel_height", tile_size))
+
+	var src_rect = Rect2(sx, sy, w, h)
+	var dest_rect = Rect2(position, Vector2(w, h))
+	draw_texture_rect_region(texture, dest_rect, src_rect)
+	return true
+
+
+func _resolve_grh_entry(grh_index: int) -> Dictionary:
+	if not _grh_entries.has(grh_index):
+		return {}
+	var entry = _grh_entries[grh_index]
+	if entry.get("num_frames", 1) > 1:
+		var frames = entry.get("frames", [])
+		if frames.size() > 0:
+			var base_id = int(frames[0])
+			if _grh_entries.has(base_id):
+				return _grh_entries[base_id]
+	return entry
+
+
+func _get_texture(file_num: int) -> Texture2D:
+	if _texture_cache.has(file_num):
+		return _texture_cache[file_num]
+
+	var texture: Texture2D = null
+	var candidates = _build_candidate_paths(file_num)
+	for path in candidates:
+		if path.begins_with("res://"):
+			if ResourceLoader.exists(path):
+				texture = load(path)
+		else:
+			if FileAccess.file_exists(path):
+				var img = Image.new()
+				var err = img.load(path)
+				if err == OK:
+					texture = ImageTexture.create_from_image(img)
+		if texture != null:
+			break
+
+	_texture_cache[file_num] = texture
+	return texture
+
+
+func _build_candidate_paths(file_num: int) -> Array:
+	var base = asset_root
+	if base.ends_with("/"):
+		base = base.substr(0, base.length() - 1)
+	var paths = []
+	paths.append("%s/Grh%d.bmp" % [base, file_num])
+	paths.append("%s/grh%d.bmp" % [base, file_num])
+	paths.append("%s/GRH%d.BMP" % [base, file_num])
+	return paths
 
 
 func _load_json(path: String) -> Dictionary:
