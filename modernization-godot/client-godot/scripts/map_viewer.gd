@@ -9,6 +9,7 @@ extends Node2D
 @export var draw_rain_layer: bool = false
 @export var play_music: bool = true
 @export var grh_speed_scale: float = 0.04
+@export var apply_color_key: bool = true
 
 var _map_data: Dictionary = {}
 var _grh_data: Dictionary = {}
@@ -159,9 +160,17 @@ func _draw_grh(grh_index: int, position: Vector2) -> bool:
 	var sy = int(entry.get("sy", 0))
 	var w = int(entry.get("pixel_width", tile_size))
 	var h = int(entry.get("pixel_height", tile_size))
+	var tile_w = float(entry.get("tile_width", 1.0))
+	var tile_h = float(entry.get("tile_height", 1.0))
+
+	var dest_pos = position
+	if tile_w != 1.0:
+		dest_pos.x -= int(tile_w * float(tile_size) * 0.5) - int(float(tile_size) * 0.5)
+	if tile_h != 1.0:
+		dest_pos.y -= int(tile_h * float(tile_size)) - tile_size
 
 	var src_rect = Rect2(sx, sy, w, h)
-	var dest_rect = Rect2(position, Vector2(w, h))
+	var dest_rect = Rect2(dest_pos, Vector2(w, h))
 	draw_texture_rect_region(texture, dest_rect, src_rect)
 	return true
 
@@ -198,14 +207,19 @@ func _get_texture(file_num: int) -> Texture2D:
 	var candidates = _build_candidate_paths(file_num)
 	for path in candidates:
 		if path.begins_with("res://"):
-			if ResourceLoader.exists(path):
-				texture = load(path)
+			if not ResourceLoader.exists(path):
+				continue
 		else:
-			if FileAccess.file_exists(path):
-				var img = Image.new()
-				var err = img.load(path)
-				if err == OK:
-					texture = ImageTexture.create_from_image(img)
+			if not FileAccess.file_exists(path):
+				continue
+
+		var img = Image.new()
+		var err = img.load(path)
+		if err != OK:
+			continue
+		if apply_color_key:
+			_apply_black_colorkey(img)
+		texture = ImageTexture.create_from_image(img)
 		if texture != null:
 			break
 
@@ -224,6 +238,17 @@ func _build_candidate_paths(file_num: int) -> Array:
 	paths.append("%s/grh%dM.bmp" % [base, file_num])
 	paths.append("%s/GRH%dM.BMP" % [base, file_num])
 	return paths
+
+
+func _apply_black_colorkey(img: Image) -> void:
+	img.lock()
+	var size = img.get_size()
+	for y in range(size.y):
+		for x in range(size.x):
+			var c = img.get_pixel(x, y)
+			if c.r <= 0.01 and c.g <= 0.01 and c.b <= 0.01:
+				img.set_pixel(x, y, Color(0, 0, 0, 0))
+	img.unlock()
 
 
 func _setup_audio() -> void:
