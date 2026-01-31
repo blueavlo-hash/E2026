@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SOURCE = ROOT / "GameData" / "Grh"
 DEFAULT_DEST = ROOT / "modernization-godot" / "client-godot" / "assets" / "grh"
 GRH_INI = ROOT / "Client" / "Grh.ini"
+GRH_DATA_JSON = ROOT / "modernization-godot" / "data" / "client" / "grh_data.json"
 
 
 def parse_ini(path: Path) -> dict:
@@ -49,6 +50,21 @@ def get_num_grh_files() -> int | None:
     return None
 
 
+def get_grh_data_file_nums() -> set[int]:
+    if not GRH_DATA_JSON.exists():
+        return set()
+    try:
+        data = json.loads(GRH_DATA_JSON.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return set()
+    file_nums = set()
+    for entry in data.get("entries", []):
+        value = entry.get("file_num")
+        if isinstance(value, int):
+            file_nums.add(value)
+    return file_nums
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Stage GRH sprite sheets into the Godot project."
@@ -84,9 +100,14 @@ def main() -> int:
         mapping[grh_id] = path
 
     num_grh = get_num_grh_files()
+    grh_data_files = get_grh_data_file_nums()
     missing = []
     available = sorted(mapping.keys())
-    if num_grh is not None:
+    if grh_data_files:
+        for i in sorted(grh_data_files):
+            if i not in mapping:
+                missing.append(i)
+    elif num_grh is not None:
         for i in range(1, num_grh + 1):
             if i not in mapping:
                 missing.append(i)
@@ -102,6 +123,7 @@ def main() -> int:
         "source": str(source),
         "dest": str(dest),
         "num_grh_files": num_grh,
+        "grh_data_file_nums": sorted(grh_data_files),
         "available_count": len(available),
         "missing_count": len(missing),
         "available": available,
@@ -114,6 +136,8 @@ def main() -> int:
     print(f"GRH files found: {len(available)}")
     if num_grh is not None:
         print(f"Expected (from Grh.ini): {num_grh}")
+    if grh_data_files:
+        print(f"Referenced in Grh.dat: {len(grh_data_files)}")
     print(f"Missing: {len(missing)}")
     if args.copy:
         print(f"Copied to: {dest}")
