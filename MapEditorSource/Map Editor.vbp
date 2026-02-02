@@ -1,7 +1,6 @@
 Type=Exe
-Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\WINDOWS\SYSTEM\STDOLE2.TLB#OLE Automation
-Reference=*\G{23523B80-C09B-11D0-8253-00805F2A72AB}#0.9#0#..\..\..\..\WINDOWS\SYSTEM\DIRECTX6.TLB#DirectX 6 Type Library v 0.9 © Patrice Scribe 1998
-Reference=*\G{22B38A80-C09B-11D0-8253-00805F2A72AB}#0.6#0#..\..\..\..\WINDOWS\SYSTEM\win32.tlb#Win32 Type Library v 0.6 - © Patrice Scribe 1998
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\SysWOW64\stdole2.tlb#OLE Automation
+Reference=*\G{23523B80-C09B-11D0-8253-00805F2A72AB}#0.9#0#C:\Users\bluea\Desktop\E2026\MapEditorSource\DIRECTX6.TLB#DirectX 6 Type Library v 0.9 © Patrice Scribe 1998
 Form=frmMain.frm
 Module=Declares; Declares.bas
 Module=General; General.bas
@@ -39,3 +38,13 @@ Unattended=0
 Retained=0
 ThreadPerObject=0
 MaxNumberOfThreads=1
+
+
+
+
+
+
+
+
+
+

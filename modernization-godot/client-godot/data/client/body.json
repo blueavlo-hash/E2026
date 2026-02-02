@@ -1,0 +1,735 @@
+{
+  "type": "ini-list",
+  "init": {
+    "NumBodies": "66"
+  },
+  "items": [
+    {
+      "id": 1,
+      "values": {
+        "Walk1": "3001",
+        "Walk2": "3003",
+        "Walk3": "3000",
+        "Walk4": "3002",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 5,
+      "values": {
+        "Walk1": "3014",
+        "Walk2": "3016",
+        "Walk3": "3013",
+        "Walk4": "3015",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 6,
+      "values": {
+        "Walk1": "3018",
+        "Walk2": "3020",
+        "Walk3": "3017",
+        "Walk4": "3019",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 7,
+      "values": {
+        "Walk1": "3022",
+        "Walk2": "3024",
+        "Walk3": "3021",
+        "Walk4": "3023",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 8,
+      "values": {
+        "Walk1": "3026",
+        "Walk2": "3028",
+        "Walk3": "3025",
+        "Walk4": "3027",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 9,
+      "values": {
+        "Walk1": "3030",
+        "Walk2": "3032",
+        "Walk3": "3029",
+        "Walk4": "3031",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 10,
+      "values": {
+        "Walk1": "3034",
+        "Walk2": "3036",
+        "Walk3": "3033",
+        "Walk4": "3035",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 11,
+      "values": {
+        "Walk1": "3038",
+        "Walk2": "3040",
+        "Walk3": "3037",
+        "Walk4": "3039",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 12,
+      "values": {
+        "Walk1": "3042",
+        "Walk2": "3044",
+        "Walk3": "3041",
+        "Walk4": "3043",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 13,
+      "values": {
+        "Walk1": "3046",
+        "Walk2": "3048",
+        "Walk3": "3045",
+        "Walk4": "3047",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 14,
+      "values": {
+        "Walk1": "3050",
+        "Walk2": "3052",
+        "Walk3": "3049",
+        "Walk4": "3051",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 15,
+      "values": {
+        "Walk1": "3054",
+        "Walk2": "3056",
+        "Walk3": "3053",
+        "Walk4": "3055",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 16,
+      "values": {
+        "Walk1": "3058",
+        "Walk2": "3060",
+        "Walk3": "3057",
+        "Walk4": "3059",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 17,
+      "values": {
+        "Walk1": "3062",
+        "Walk2": "3064",
+        "Walk3": "3061",
+        "Walk4": "3063",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 18,
+      "values": {
+        "Walk1": "3066",
+        "Walk2": "3068",
+        "Walk3": "3065",
+        "Walk4": "3067",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 19,
+      "values": {
+        "Walk1": "3070",
+        "Walk2": "3072",
+        "Walk3": "3069",
+        "Walk4": "3071",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 20,
+      "values": {
+        "Walk1": "3074",
+        "Walk2": "3076",
+        "Walk3": "3073",
+        "Walk4": "3075",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 21,
+      "values": {
+        "Walk1": "3078",
+        "Walk2": "3080",
+        "Walk3": "3077",
+        "Walk4": "3079",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 22,
+      "values": {
+        "Walk1": "3082",
+        "Walk2": "3084",
+        "Walk3": "3081",
+        "Walk4": "3083",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 23,
+      "values": {
+        "Walk1": "3086",
+        "Walk2": "3088",
+        "Walk3": "3085",
+        "Walk4": "3087",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 24,
+      "values": {
+        "Walk1": "3090",
+        "Walk2": "3092",
+        "Walk3": "3089",
+        "Walk4": "3091",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 25,
+      "values": {
+        "Walk1": "3094",
+        "Walk2": "3096",
+        "Walk3": "3093",
+        "Walk4": "3095",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 36,
+      "values": {
+        "Walk1": "3098",
+        "Walk2": "3100",
+        "Walk3": "3097",
+        "Walk4": "3099",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 37,
+      "values": {
+        "Walk1": "3102",
+        "Walk2": "3104",
+        "Walk3": "3101",
+        "Walk4": "3103",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 38,
+      "values": {
+        "Walk1": "3106",
+        "Walk2": "3108",
+        "Walk3": "3105",
+        "Walk4": "3107",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 39,
+      "values": {
+        "Walk1": "3110",
+        "Walk2": "3112",
+        "Walk3": "3109",
+        "Walk4": "3111",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 62,
+      "values": {
+        "Walk1": "3114",
+        "Walk2": "3116",
+        "Walk3": "3113",
+        "Walk4": "3115",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 63,
+      "values": {
+        "Walk1": "3118",
+        "Walk2": "3120",
+        "Walk3": "3117",
+        "Walk4": "3119",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 64,
+      "values": {
+        "Walk1": "3122",
+        "Walk2": "3124",
+        "Walk3": "3121",
+        "Walk4": "3123",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 65,
+      "values": {
+        "Walk1": "3126",
+        "Walk2": "3128",
+        "Walk3": "3125",
+        "Walk4": "3127",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 66,
+      "values": {
+        "Walk1": "3130",
+        "Walk2": "3132",
+        "Walk3": "3129",
+        "Walk4": "3131",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 2,
+      "values": {
+        "Walk1": "3004",
+        "Walk2": "3004",
+        "Walk3": "3004",
+        "Walk4": "3004",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 3,
+      "values": {
+        "Walk1": "3006",
+        "Walk2": "3008",
+        "Walk3": "3005",
+        "Walk4": "3007",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 4,
+      "values": {
+        "Walk1": "3010",
+        "Walk2": "3012",
+        "Walk3": "3009",
+        "Walk4": "3011",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 26,
+      "values": {
+        "Walk1": "14001",
+        "Walk2": "14003",
+        "Walk3": "14000",
+        "Walk4": "14002",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 27,
+      "values": {
+        "Walk1": "14005",
+        "Walk2": "14007",
+        "Walk3": "14004",
+        "Walk4": "14006",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 28,
+      "values": {
+        "Walk1": "14009",
+        "Walk2": "14011",
+        "Walk3": "14008",
+        "Walk4": "14010",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 29,
+      "values": {
+        "Walk1": "14013",
+        "Walk2": "14015",
+        "Walk3": "14012",
+        "Walk4": "14014",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 30,
+      "values": {
+        "Walk1": "14017",
+        "Walk2": "14019",
+        "Walk3": "14016",
+        "Walk4": "14018",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 31,
+      "values": {
+        "Walk1": "14021",
+        "Walk2": "14023",
+        "Walk3": "14020",
+        "Walk4": "14022",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 32,
+      "values": {
+        "Walk1": "14025",
+        "Walk2": "14027",
+        "Walk3": "14024",
+        "Walk4": "14026",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 33,
+      "values": {
+        "Walk1": "14029",
+        "Walk2": "14031",
+        "Walk3": "14028",
+        "Walk4": "14030",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 34,
+      "values": {
+        "Walk1": "14033",
+        "Walk2": "14035",
+        "Walk3": "14032",
+        "Walk4": "14034",
+        "HeadoffsettY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 35,
+      "values": {
+        "Walk1": "14037",
+        "Walk2": "14039",
+        "Walk3": "14036",
+        "Walk4": "14038",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 47,
+      "values": {
+        "Walk1": "14041",
+        "Walk2": "14043",
+        "Walk3": "14040",
+        "Walk4": "14042",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 48,
+      "values": {
+        "Walk1": "14045",
+        "Walk2": "14047",
+        "Walk3": "14044",
+        "Walk4": "14046",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 49,
+      "values": {
+        "Walk1": "14049",
+        "Walk2": "14051",
+        "Walk3": "14048",
+        "Walk4": "14050",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 50,
+      "values": {
+        "Walk1": "14053",
+        "Walk2": "14055",
+        "Walk3": "14052",
+        "Walk4": "14054",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 51,
+      "values": {
+        "Walk1": "14057",
+        "Walk2": "14059",
+        "Walk3": "14056",
+        "Walk4": "14058",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 52,
+      "values": {
+        "Walk1": "14061",
+        "Walk2": "14063",
+        "Walk3": "14060",
+        "Walk4": "14062",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 53,
+      "values": {
+        "Walk1": "14065",
+        "Walk2": "14067",
+        "Walk3": "14064",
+        "Walk4": "14066",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 54,
+      "values": {
+        "Walk1": "14069",
+        "Walk2": "14071",
+        "Walk3": "14068",
+        "Walk4": "14070",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 55,
+      "values": {
+        "Walk1": "14073",
+        "Walk2": "14075",
+        "Walk3": "14072",
+        "Walk4": "14074",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 56,
+      "values": {
+        "Walk1": "14077",
+        "Walk2": "14079",
+        "Walk3": "14076",
+        "Walk4": "14078",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 57,
+      "values": {
+        "Walk1": "14081",
+        "Walk2": "14083",
+        "Walk3": "14080",
+        "Walk4": "14082",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 60,
+      "values": {
+        "Walk1": "14085",
+        "Walk2": "14087",
+        "Walk3": "14084",
+        "Walk4": "14086",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 61,
+      "values": {
+        "Walk1": "14089",
+        "Walk2": "14091",
+        "Walk3": "14088",
+        "Walk4": "14090",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 40,
+      "values": {
+        "Walk1": "13001",
+        "Walk2": "13003",
+        "Walk3": "13000",
+        "Walk4": "13002",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 41,
+      "values": {
+        "Walk1": "13005",
+        "Walk2": "13007",
+        "Walk3": "13004",
+        "Walk4": "13006",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 42,
+      "values": {
+        "Walk1": "13009",
+        "Walk2": "13011",
+        "Walk3": "13008",
+        "Walk4": "13010",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 43,
+      "values": {
+        "Walk1": "13013",
+        "Walk2": "13015",
+        "Walk3": "13012",
+        "Walk4": "13014",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 44,
+      "values": {
+        "Walk1": "13017",
+        "Walk2": "13019",
+        "Walk3": "13016",
+        "Walk4": "13018",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 45,
+      "values": {
+        "Walk1": "13021",
+        "Walk2": "13023",
+        "Walk3": "13020",
+        "Walk4": "13022",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 46,
+      "values": {
+        "Walk1": "13025",
+        "Walk2": "13027",
+        "Walk3": "13024",
+        "Walk4": "13026",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 58,
+      "values": {
+        "Walk1": "13029",
+        "Walk2": "13031",
+        "Walk3": "13028",
+        "Walk4": "13030",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    },
+    {
+      "id": 59,
+      "values": {
+        "Walk1": "13033",
+        "Walk2": "13035",
+        "Walk3": "13032",
+        "Walk4": "13034",
+        "HeadoffsetY": "-27",
+        "HeadoffsetX": "0"
+      }
+    }
+  ],
+  "source": "Client\\Body.dat"
+}

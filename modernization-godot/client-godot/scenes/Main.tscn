@@ -1,47 +1,446 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://bkfnr2vlre342"]
 
-[ext_resource type="Script" path="res://scripts/main.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/map_viewer.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/hud.gd" id="3"]
+[ext_resource type="Script" uid="uid://h2s0kn0hxgiv" path="res://scripts/main.gd" id="1"]
+[ext_resource type="Script" uid="uid://dtfxb3rpnbg15" path="res://scripts/map_viewer.gd" id="2"]
+[ext_resource type="Script" uid="uid://d06oqjhcg7h38" path="res://scripts/hud.gd" id="3"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=859876585]
 script = ExtResource("1")
 
-[node name="MapViewer" type="Node2D" parent="."]
+[node name="MapViewer" type="Node2D" parent="." unique_id=1481600273]
 script = ExtResource("2")
+play_music = false
+color_key_tolerance = 0.08
+flood_fill_background = false
+debug_color_key = true
+debug_color_key_file = 3
+player_speed_tiles = 3.0
+camera_follow_speed = 5.0
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=561755824]
 script = ExtResource("3")
 
-[node name="Panel" type="Panel" parent="HUD"]
+[node name="Panel" type="Panel" parent="HUD" unique_id=1562113810]
 offset_left = 12.0
 offset_top = 12.0
 offset_right = 360.0
-offset_bottom = 180.0
+offset_bottom = 240.0
+mouse_filter = 1
 
-[node name="VBox" type="VBoxContainer" parent="HUD/Panel"]
+[node name="VBox" type="VBoxContainer" parent="HUD/Panel" unique_id=263987201]
+layout_mode = 0
 offset_left = 12.0
 offset_top = 12.0
 offset_right = 336.0
-offset_bottom = 156.0
+offset_bottom = 216.0
 
-[node name="Title" type="Label" parent="HUD/Panel/VBox"]
+[node name="Title" type="Label" parent="HUD/Panel/VBox" unique_id=1013759640]
+layout_mode = 2
 text = "Map Viewer"
 
-[node name="Info" type="Label" parent="HUD/Panel/VBox"]
+[node name="Info" type="Label" parent="HUD/Panel/VBox" unique_id=598179999]
+layout_mode = 2
 text = "Loading..."
 
-[node name="Toggles" type="Label" parent="HUD/Panel/VBox"]
+[node name="Toggles" type="Label" parent="HUD/Panel/VBox" unique_id=1978836]
+layout_mode = 2
 text = "Toggles"
 
-[node name="MusicToggle" type="Button" parent="HUD/Panel/VBox"]
+[node name="EditorInfo" type="Label" parent="HUD/Panel/VBox" unique_id=1978837]
+layout_mode = 2
+text = "Editor"
+
+[node name="MusicToggle" type="Button" parent="HUD/Panel/VBox" unique_id=572841341]
+layout_mode = 2
 text = "Music: Play"
 
-[node name="VolumeLabel" type="Label" parent="HUD/Panel/VBox"]
+[node name="VolumeLabel" type="Label" parent="HUD/Panel/VBox" unique_id=1471963927]
+layout_mode = 2
 text = "Volume"
 
-[node name="VolumeSlider" type="HSlider" parent="HUD/Panel/VBox"]
-min_value = 0.0
+[node name="VolumeSlider" type="HSlider" parent="HUD/Panel/VBox" unique_id=748121084]
+layout_mode = 2
 max_value = 1.0
 step = 0.01
-value = 0.7
+value = 0.1
+
+[node name="EditorButton" type="Button" parent="HUD/Panel/VBox" unique_id=1789820551]
+layout_mode = 2
+text = "Editor (F8)"
+
+[node name="InventoryButton" type="Button" parent="HUD/Panel/VBox"]
+layout_mode = 2
+text = "Inventory (I)"
+
+[node name="SpriteBrowserButton" type="Button" parent="HUD/Panel/VBox"]
+layout_mode = 2
+text = "Sprite Browser (B)"
+
+[node name="EditorWindow" type="Window" parent="." unique_id=724854078]
+title = "Map Editor"
+position = Vector2i(40, 40)
+size = Vector2i(360, 540)
+visible = false
+min_size = Vector2i(360, 540)
+
+[node name="ExitDialog" type="AcceptDialog" parent="EditorWindow" unique_id=964834057]
+title = "Exit Target"
+size = Vector2i(260, 180)
+min_size = Vector2i(260, 180)
+
+[node name="ExitDialogVBox" type="VBoxContainer" parent="EditorWindow/ExitDialog" unique_id=1567721532]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 248.0
+offset_bottom = 168.0
+
+[node name="ExitDialogGrid" type="GridContainer" parent="EditorWindow/ExitDialog/ExitDialogVBox" unique_id=886270548]
+layout_mode = 2
+columns = 2
+
+[node name="ExitDialogMapLabel" type="Label" parent="EditorWindow/ExitDialog/ExitDialogVBox/ExitDialogGrid" unique_id=2094411035]
+layout_mode = 2
+text = "Map ID"
+
+[node name="ExitDialogMapSpin" type="SpinBox" parent="EditorWindow/ExitDialog/ExitDialogVBox/ExitDialogGrid" unique_id=989187046]
+layout_mode = 2
+max_value = 9999.0
+
+[node name="ExitDialogXLabel" type="Label" parent="EditorWindow/ExitDialog/ExitDialogVBox/ExitDialogGrid" unique_id=501941062]
+layout_mode = 2
+text = "Spawn X"
+
+[node name="ExitDialogXSpin" type="SpinBox" parent="EditorWindow/ExitDialog/ExitDialogVBox/ExitDialogGrid" unique_id=776070925]
+layout_mode = 2
+max_value = 255.0
+
+[node name="ExitDialogYLabel" type="Label" parent="EditorWindow/ExitDialog/ExitDialogVBox/ExitDialogGrid" unique_id=488210242]
+layout_mode = 2
+text = "Spawn Y"
+
+[node name="ExitDialogYSpin" type="SpinBox" parent="EditorWindow/ExitDialog/ExitDialogVBox/ExitDialogGrid" unique_id=2056559585]
+layout_mode = 2
+max_value = 255.0
+
+[node name="InventoryWindow" type="Window" parent="."]
+title = "Inventory"
+visible = false
+min_size = Vector2i(280, 220)
+size = Vector2i(280, 220)
+position = Vector2i(60, 60)
+
+[node name="InventoryPanel" type="Panel" parent="InventoryWindow"]
+offset_right = 280.0
+offset_bottom = 220.0
+
+[node name="InventoryVBox" type="VBoxContainer" parent="InventoryWindow/InventoryPanel"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 268.0
+offset_bottom = 208.0
+
+[node name="InventoryTitle" type="Label" parent="InventoryWindow/InventoryPanel/InventoryVBox"]
+layout_mode = 2
+text = "Inventory"
+
+[node name="InventoryGrid" type="GridContainer" parent="InventoryWindow/InventoryPanel/InventoryVBox"]
+layout_mode = 2
+columns = 4
+custom_minimum_size = Vector2(220, 120)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SelectedLabel" type="Label" parent="InventoryWindow/InventoryPanel/InventoryVBox"]
+layout_mode = 2
+text = "Selected: None"
+
+[node name="EquipButton" type="Button" parent="InventoryWindow/InventoryPanel/InventoryVBox"]
+layout_mode = 2
+text = "Equip"
+
+[node name="EquippedLabel" type="Label" parent="InventoryWindow/InventoryPanel/InventoryVBox"]
+layout_mode = 2
+text = "Equipped: None"
+
+[node name="SpriteBrowserWindow" type="Window" parent="."]
+title = "Sprite Browser"
+visible = false
+min_size = Vector2i(520, 420)
+size = Vector2i(520, 420)
+position = Vector2i(80, 80)
+
+[node name="SpriteBrowserPanel" type="Panel" parent="SpriteBrowserWindow"]
+offset_right = 520.0
+offset_bottom = 420.0
+
+[node name="SpriteBrowserVBox" type="VBoxContainer" parent="SpriteBrowserWindow/SpriteBrowserPanel"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 508.0
+offset_bottom = 408.0
+
+[node name="SpriteSearch" type="LineEdit" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox"]
+layout_mode = 2
+placeholder_text = "Filter by GRH id (e.g., 5258)"
+
+[node name="SpriteContent" type="HBoxContainer" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox"]
+layout_mode = 2
+
+[node name="SpriteList" type="ItemList" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 300)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SpritePreviewVBox" type="VBoxContainer" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SpritePreview" type="TextureRect" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteContent/SpritePreviewVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(128, 128)
+stretch_mode = 5
+
+[node name="SpriteInfo" type="Label" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteContent/SpritePreviewVBox"]
+layout_mode = 2
+text = "GRH: -"
+
+[node name="SpriteFrames" type="Label" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteContent/SpritePreviewVBox"]
+layout_mode = 2
+text = "Frames: -"
+
+[node name="SpriteFrameList" type="ItemList" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteContent/SpritePreviewVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 120)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SpriteControls" type="HBoxContainer" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox"]
+layout_mode = 2
+
+[node name="SpritePrev" type="Button" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteControls"]
+layout_mode = 2
+text = "<"
+
+[node name="SpriteNext" type="Button" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteControls"]
+layout_mode = 2
+text = ">"
+
+[node name="SpriteFrameLabel" type="Label" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteControls"]
+layout_mode = 2
+text = "Frame"
+
+[node name="SpriteFrameSpin" type="SpinBox" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 0.0
+step = 1.0
+
+[node name="SpritePlayToggle" type="CheckBox" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteControls"]
+layout_mode = 2
+text = "Play"
+button_pressed = true
+
+[node name="SpriteFpsLabel" type="Label" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteControls"]
+layout_mode = 2
+text = "FPS"
+
+[node name="SpriteFpsSpin" type="SpinBox" parent="SpriteBrowserWindow/SpriteBrowserPanel/SpriteBrowserVBox/SpriteControls"]
+layout_mode = 2
+min_value = 1.0
+max_value = 30.0
+step = 1.0
+value = 8.0
+
+[node name="EditorPanel" type="Panel" parent="EditorWindow" unique_id=1289545391]
+offset_right = 360.0
+offset_bottom = 540.0
+
+[node name="EditorVBox" type="VBoxContainer" parent="EditorWindow/EditorPanel" unique_id=330066864]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 348.0
+offset_bottom = 520.0
+
+[node name="EditorTitle" type="Label" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=1635065641]
+layout_mode = 2
+text = "Map Editor"
+
+[node name="EditEnabled" type="CheckBox" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=654202999]
+layout_mode = 2
+text = "Edit Mode"
+
+[node name="ToolSelect" type="OptionButton" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=783354549]
+layout_mode = 2
+
+[node name="EditorGrid" type="GridContainer" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=1930234808]
+layout_mode = 2
+columns = 2
+
+[node name="LayerLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=488010707]
+layout_mode = 2
+text = "Layer"
+
+[node name="LayerSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=619838096]
+layout_mode = 2
+min_value = 1.0
+max_value = 4.0
+value = 1.0
+
+[node name="GrhLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=625679695]
+layout_mode = 2
+text = "GRH"
+
+[node name="GrhSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=537105857]
+layout_mode = 2
+max_value = 9999.0
+value = 1.0
+
+[node name="GrhPreviewLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=508182996]
+layout_mode = 2
+text = "Preview"
+
+[node name="GrhPreview" type="TextureRect" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=924016870]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="GrhPreviewInfo" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=396388448]
+layout_mode = 2
+text = "Grh"
+
+[node name="ExitMapLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=64521314]
+layout_mode = 2
+text = "Exit Map"
+
+[node name="ExitMapSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=1471049447]
+layout_mode = 2
+max_value = 9999.0
+value = 1.0
+
+[node name="ExitXLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=2010614736]
+layout_mode = 2
+text = "Exit X"
+
+[node name="ExitXSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=2115494634]
+layout_mode = 2
+max_value = 255.0
+value = 10.0
+
+[node name="ExitYLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=1143867764]
+layout_mode = 2
+text = "Exit Y"
+
+[node name="ExitYSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=79217557]
+layout_mode = 2
+max_value = 255.0
+value = 10.0
+
+[node name="RoofLayerLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=1522483074]
+layout_mode = 2
+text = "Roof Layer"
+
+[node name="RoofLayerSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/EditorGrid" unique_id=519121526]
+layout_mode = 2
+min_value = 1.0
+max_value = 4.0
+value = 4.0
+
+[node name="LayerToggles" type="HBoxContainer" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=101651158]
+layout_mode = 2
+
+[node name="ShowLayer1" type="CheckBox" parent="EditorWindow/EditorPanel/EditorVBox/LayerToggles" unique_id=875564187]
+layout_mode = 2
+button_pressed = true
+text = "L1"
+
+[node name="ShowLayer2" type="CheckBox" parent="EditorWindow/EditorPanel/EditorVBox/LayerToggles" unique_id=1413363787]
+layout_mode = 2
+button_pressed = true
+text = "L2"
+
+[node name="ShowLayer3" type="CheckBox" parent="EditorWindow/EditorPanel/EditorVBox/LayerToggles" unique_id=1869310824]
+layout_mode = 2
+button_pressed = true
+text = "L3"
+
+[node name="ShowLayer4" type="CheckBox" parent="EditorWindow/EditorPanel/EditorVBox/LayerToggles" unique_id=298470110]
+layout_mode = 2
+button_pressed = true
+text = "L4"
+
+[node name="BlockedOverlayToggle" type="CheckBox" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=1418517435]
+layout_mode = 2
+button_pressed = true
+text = "Blocked Overlay"
+
+[node name="ExitOverlayToggle" type="CheckBox" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=1386424872]
+layout_mode = 2
+button_pressed = true
+text = "Exit Overlay"
+
+[node name="RoofFadeToggle" type="CheckBox" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=279653482]
+layout_mode = 2
+button_pressed = true
+text = "Roof Fade"
+
+[node name="AlphaPreviewRow" type="HBoxContainer" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=79276413]
+layout_mode = 2
+
+[node name="AlphaPreviewToggle" type="CheckBox" parent="EditorWindow/EditorPanel/EditorVBox/AlphaPreviewRow" unique_id=1294963023]
+layout_mode = 2
+text = "Alpha Preview"
+
+[node name="AlphaPreviewSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/AlphaPreviewRow" unique_id=1700666518]
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.3
+
+[node name="EdgeGrid" type="GridContainer" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=1067177821]
+layout_mode = 2
+columns = 2
+
+[node name="NorthExitLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EdgeGrid" unique_id=1063067584]
+layout_mode = 2
+text = "North Exit"
+
+[node name="NorthExitSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/EdgeGrid" unique_id=1246923287]
+layout_mode = 2
+max_value = 9999.0
+
+[node name="SouthExitLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EdgeGrid" unique_id=407929783]
+layout_mode = 2
+text = "South Exit"
+
+[node name="SouthExitSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/EdgeGrid" unique_id=1660076542]
+layout_mode = 2
+max_value = 9999.0
+
+[node name="WestExitLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EdgeGrid" unique_id=553995736]
+layout_mode = 2
+text = "West Exit"
+
+[node name="WestExitSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/EdgeGrid" unique_id=1143972209]
+layout_mode = 2
+max_value = 9999.0
+
+[node name="EastExitLabel" type="Label" parent="EditorWindow/EditorPanel/EditorVBox/EdgeGrid" unique_id=1504218797]
+layout_mode = 2
+text = "East Exit"
+
+[node name="EastExitSpin" type="SpinBox" parent="EditorWindow/EditorPanel/EditorVBox/EdgeGrid" unique_id=2009368436]
+layout_mode = 2
+max_value = 9999.0
+
+[node name="ApplyEdgeExits" type="Button" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=852727177]
+layout_mode = 2
+text = "Apply Edge Exits"
+
+[node name="SaveButton" type="Button" parent="EditorWindow/EditorPanel/EditorVBox" unique_id=1844304780]
+layout_mode = 2
+text = "Save Map (Ctrl+S)"

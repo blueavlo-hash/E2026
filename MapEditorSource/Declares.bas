@@ -47,6 +47,14 @@ Public Type WorldPos
     y As Integer
 End Type
 
+'Win32 RECT replacement for missing win32.tlb
+Public Type RECT
+    Left As Long
+    Top As Long
+    Right As Long
+    Bottom As Long
+End Type
+
 'Holds data about where a bmp can be found,
 'How big it is and animation info
 Public Type GrhData
@@ -204,3 +212,32 @@ Declare Function writeprivateprofilestring Lib "Kernel32" Alias "WritePrivatePro
 Declare Function getprivateprofilestring Lib "Kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nsize As Long, ByVal lpfilename As String) As Long
 
 Declare Function GetKeyState Lib "user32" (ByVal nVirtKey As Long) As Integer
+
+
+'Bitmap headers (win32.tlb replacement)
+Public Type BITMAPFILEHEADER
+    bfType As Integer
+    bfSize As Long
+    bfReserved1 As Integer
+    bfReserved2 As Integer
+    bfOffBits As Long
+End Type
+
+Public Type BITMAPINFOHEADER
+    biSize As Long
+    biWidth As Long
+    biHeight As Long
+    biPlanes As Integer
+    biBitCount As Integer
+    biCompression As Long
+    biSizeImage As Long
+    biXPelsPerMeter As Long
+    biYPelsPerMeter As Long
+    biClrUsed As Long
+    biClrImportant As Long
+End Type
+'Win32 APIs (win32.tlb replacement)
+Declare Function GetDesktopWindow Lib "user32" () As Long
+Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
+Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hdc As Long) As Long
+Declare Function GetDeviceCaps Lib "gdi32" (ByVal hdc As Long, ByVal nIndex As Long) As Long

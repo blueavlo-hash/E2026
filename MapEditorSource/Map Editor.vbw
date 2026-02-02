@@ -1,4 +1,7 @@
-frmMain = 0, 0, 0, 0, C, 38, 10, 726, 606, 
-Graphics = 88, 88, 625, 528, C
+frmMain = 0, 0, 0, 0, C, 38, 10, 726, 606, C
+Declares = 52, 52, 1389, 702, C
 General = 22, 22, 386, 413, C
-Declares = 0, 0, 0, 0, C
+Graphics = 88, 88, 625, 528, C
+frmAbout = 0, 0, 0, 0, C, 0, 0, 0, 0, C
+toolbox = 0, 0, 0, 0, C, 0, 0, 0, 0, C
+tip = 0, 0, 0, 0, C, 0, 0, 0, 0, C
